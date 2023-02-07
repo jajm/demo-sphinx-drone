@@ -25,7 +25,8 @@ git clone --branch gh-pages git@github.com:jajm/demo-sphinx-drone.git .
 
 languages="en fr"
 for language in $languages; do
-    cp -r "$DRONE_WORKSPACE/documentation/_build/$language" .
+    rm -rf $language
+    cp -r "$DRONE_WORKSPACE/documentation/_build/$language/html" $language
     git add $language
 done
 git commit -m "Drone build: $DRONE_BUILD_NUMBER\n\nTriggered-by: $DRONE_COMMIT_SHA"
