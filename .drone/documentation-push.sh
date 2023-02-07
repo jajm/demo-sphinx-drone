@@ -1,0 +1,30 @@
+#!/bin/sh
+
+unset GIT_AUTHOR_NAME
+unset GIT_AUTHOR_EMAIL
+unset GIT_AUTHOR_DATE
+unset GIT_COMMITTER_NAME
+unset GIT_COMMITTER_EMAIL
+unset GIT_COMMITTER_DATE
+
+git config user.email "drone@biblibre.com"
+git config user.name "Drone CI"
+
+mkdir -p ~/.ssh
+printenv GH_DEPLOY_KEY > ~/.ssh/deploy_key
+chmod 600 ~/.ssh/deploy_key
+cat > ~/.ssh/config << 'CONFIG'
+Host github.com
+User git
+IdentityFile ~/.ssh/deploy_key
+StrictHostKeyChecking accept-new
+CONFIG
+
+cd "$(mktemp -d)"
+git clone --branch gh-pages git@github.com:jajm/demo-sphinx-drone.git .
+
+cp -r "$DRONE_WORKSPACE/documentation/_build"/{en,fr} .
+git add en fr
+git commit -m "Drone build: $DRONE_BUILD_NUMBER\n\nTriggered-by: $DRONE_COMMIT_SHA"
+
+git push --quiet origin gh-pages

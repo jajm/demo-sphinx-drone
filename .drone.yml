@@ -1,0 +1,14 @@
+kind: 'pipeline'
+type: 'docker'
+name: 'documentation'
+steps:
+  - name: 'build'
+    image: 'python:3'
+    commands:
+      - '.drone/documentation-build.sh'
+      - '.drone/documentation-push.sh'
+trigger:
+  branch:
+    - 'master'
+  event:
+    - 'push'
